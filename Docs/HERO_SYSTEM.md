@@ -1,78 +1,90 @@
 # HERO_SYSTEM.md
 
 ## Purpose
-Defines the template hero data and the runtime hero instance model.
+Defines the template-to-instance architecture for heroes. Separates immutable data definitions from mutable runtime state.
 
-## Main Scripts
-- `Assets/Scripts/HeroData.cs`
-- `Assets/Scripts/HeroInstance.cs`
-- `Assets/Scripts/HeroDatabase.cs`
-- `Assets/Scripts/HeroUtils.cs`
-- `Assets/Scripts/GameManager.cs`
+## Core Principle: Runtime/Template Separation
+- **HeroData (ScriptableObject)** = Immutable template. Never modified at runtime. Source of base stats, class, traits, and scaling curves.
+- **HeroInstance** = Mutable runtime state. Tracks HP, level, XP, morale, status, equipment, and battle history. Serialized to JSON for saves.
+- **HeroDatabase** = Runtime lookup index. Maps stable `heroId` strings to `HeroData` templates. Not a source of truth.
 
-## Dependencies
-- `SkillData` for skill links
-- `GameManager` for hero registry and roster access
-- `HeroDatabase` for stable ID lookup and template validation
-- `SaveSystem` for persistence
-- `MoraleSystem` for morale and status transitions
-- `TraitSystem` for trait effects in combat
-- `Resources/Heroes` for current fallback asset loading path
-
-## Data Flow
+## Architecture Diagram
 ```mermaid
-flowchart LR
-    A[HeroData SO] --> B[HeroInstance]
-    A --> G[HeroDatabase lookup]
-    G --> B
-    B --> C[GameState roster]
-    C --> D[SaveSystem JSON]
-    D --> E[Load on boot]
-    E --> F[UI, combat, morale, quests]
+flowchart TD
+    A[HeroData SO Assets] -->|Read-only| B[HeroDatabase Index]
+    B -->|Lookup by heroId| C[HeroInstance Constructor]
+    C --> D[Runtime Roster in GameState]
+    D --> E[SaveSystem JSON Serialization]
+    E --> F[Load on Boot]
+    F --> G[UI, Combat, Morale Systems]
+    A -.->|Template reference| C
 ```
 
-## Runtime Lifecycle
-1. `GameManager` loads hero templates
-2. `HeroDatabase` indexes templates by stable `heroId`
-3. A summon creates a `HeroInstance`
-4. The hero is added to the roster
-5. Combat reads the runtime snapshot through `CombatUnit`
-6. Leveling, morale, death, and titles mutate the instance
-7. Save writes the instance back to JSON
+## Component Responsibilities
 
-## Related Managers
-- `GameManager`
-- `MoraleSystem`
-- `FacilityManager`
-- `QuestSystem`
-- `CombatManager`
-- `SynthesisSystem`
+### HeroData (Template)
+- **Location:** `Assets/Resources/Heroes/SO_Hero_*.asset`
+- **Type:** ScriptableObject (immutable at runtime)
+- **Fields:**
+  - Identity: `heroId`, `heroName`, `heroClass`, `starRating`
+  - Stats: `baseStats` (hp, atk, def, spd), per-level scaling curves
+  - Traits: `possibleTraits` list, `dropWeight` for gacha
+  - Skills: `possessedSkillId` reference
+- **Rules:** Never store runtime state here. Never mutate after load.
 
-## Common Bugs
-- Hero asset names and runtime IDs drift apart
-- Missing or duplicate `heroId` values break database consistency
-- Missing `Resources/Heroes` assets break registry lookup
-- Stat calculations are touched in more than one place
-- Trait logic can be duplicated between combat and morale systems
+### HeroInstance (Runtime State)
+- **Location:** Constructed by `GachaSystem`, stored in `GameState.roster`
+- **Type:** Serializable C# class
+- **Fields:**
+  - Identity: `instanceId` (GUID), `heroDataId` (links to template)
+  - Progression: `level`, `currentXP`, `xpToNextLevel`
+  - Live Stats: `currentHP`, `maxHP`, `atk`, `def`, `spd`, `critChance`, STR/INT/AGI
+  - Status: `morale`, `fatigue`, `HeroStatus` (Active/Fatigued/Wounded/Dead)
+  - History: `missionsCompleted`, `kills`, `earnedTitle`, `battleLog`
+  - Equipment: `equippedWeaponId`, `equippedArmorId`, `equippedRingId`
+- **Methods:**
+  - `RecalculateStats(HeroData)` — applies template + level + synthesis bonuses
+  - `AddXP(amount, HeroData)` — handles leveling and stat recalculation
+  - `ModifyMorale(delta)` — applies trait modifiers
+  - `Die()` — marks hero as dead, records death info
+- **Rules:** This is the only place for mutable hero state. Safe to serialize.
 
-## Important Warnings
-- `HeroData` should stay read-only
-- `HeroInstance` is the canonical place for mutable hero state
-- `HeroDatabase` is the lookup layer, not the source of truth
-- Do not store scene object references on hero data or save state
-- Do not add UI-only fields into the template asset unless they are true gameplay data
+### HeroDatabase (Lookup Layer)
+- **Location:** Built by `GameManager` at startup
+- **Type:** Runtime registry class
+- **Responsibilities:**
+  - Index all `HeroData` assets by `heroId` and asset name
+  - Provide `TryGet(heroId)` lookup for instance construction
+  - Validate uniqueness of hero IDs
+  - Support future JSON import pipeline
+- **Rules:** Does not own data. Rebuildable from assets or JSON.
 
-## AI Editing Precautions
-- Read `HeroData`, `HeroInstance`, and the matching system doc before editing hero logic
-- If a field changes here, update save data, UI display, and combat consumers together
-- Prefer changing helper methods over rewriting raw stat math
-- Do not rename hero IDs unless migration is planned
-- Validate `heroId` uniqueness before shipping new hero content
+## Lifecycle Flow
+1. **Boot:** `GameManager` loads `HeroData` assets → builds `HeroDatabase`
+2. **Summon:** `GachaSystem` picks template → constructs `HeroInstance(template)`
+3. **Roster:** Instance added to `GameState.roster` (List<HeroInstance>)
+4. **Gameplay:** Combat, morale, quests mutate `HeroInstance` fields only
+5. **Save:** `SaveSystem` serializes `HeroInstance` list to JSON
+6. **Load:** JSON deserializes → instances restored → template re-linked via `heroDataId`
 
-## Future Expansion Plans
-- Equipment slots and loadout bonuses
-- Affinity and relationship systems
-- Hero branching evolutions
-- Full addressable-backed hero content
-- Duplicate conversion and shard systems
-- JSON import pipeline for hero templates
+## Key Relationships
+| Relationship | Direction | Notes |
+|--------------|-----------|-------|
+| HeroInstance → HeroData | Reference via `heroDataId` | Instance reads template, never writes |
+| HeroInstance → GameState | Contained in `roster` list | GameState owns lifecycle |
+| HeroDatabase → HeroData | Index mapping | Database is transient lookup cache |
+| GameManager → HeroDatabase | Owner/builder | GameManager rebuilds on demand |
+
+## Common Pitfalls
+- ❌ Mutating `HeroData` at runtime (breaks template integrity)
+- ❌ Storing scene object references in `HeroInstance` (breaks save/load)
+- ❌ Using asset name instead of `heroId` for lookups (fragile under renaming)
+- ❌ Duplicate `heroId` values (breaks database consistency)
+- ❌ Calculating stats in multiple places (use `RecalculateStats` only)
+
+## Files To Inspect
+- `Assets/Scripts/HeroData.cs` — Template definition
+- `Assets/Scripts/HeroInstance.cs` — Runtime state and methods
+- `Assets/Scripts/HeroDatabase.cs` — Lookup index
+- `Assets/Scripts/GameManager.cs` — Registry owner
+- `Assets/Scripts/GachaSystem.cs` — Instance constructor caller

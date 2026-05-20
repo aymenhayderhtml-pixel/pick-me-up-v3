@@ -954,6 +954,7 @@ GameObject:
   - component: {fileID: 8942214911354802302}
   - component: {fileID: 4915238217022776686}
   - component: {fileID: 9022298781181237704}
+  - component: {fileID: 9144721181234567890}
   m_Layer: 0
   m_Name: HeroCard
   m_TagString: Untagged
@@ -1024,3 +1025,30 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &9144721181234567890
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7193626220853401996}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f13c984e2d169aa48a963c8047a3cc0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Portrait: {fileID: 0}
+  DeployBadge: {fileID: 0}
+  txt_Deploy: {fileID: 0}
+  LockIcon: {fileID: 0}
+  ConditionOrb: {fileID: 0}
+  icon_Eye: {fileID: 0}
+  CPBadge: {fileID: 0}
+  txt_CP: {fileID: 0}
+  txt_Name: {fileID: 4397182351762251943}
+  txt_Stars: {fileID: 7777915630250653774}
+  img_Stars: []
+  ClassTag: {fileID: 0}
+  txt_Class: {fileID: 8161223967897976005}
+  txt_Level: {fileID: 0}
+  EpitaphLine: {fileID: 1240431504882239107}

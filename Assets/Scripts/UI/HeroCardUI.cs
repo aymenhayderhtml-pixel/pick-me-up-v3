@@ -18,6 +18,7 @@ public class HeroCardUI : MonoBehaviour
 
     [Header("Card Body")]
     public TMP_Text txt_Name;
+    public TMP_Text txt_Stars;
     public Image[] img_Stars; // 5 stars row
     public Image ClassTag;
     public TMP_Text txt_Class;
@@ -28,6 +29,34 @@ public class HeroCardUI : MonoBehaviour
 
     private HeroInstance _hero;
     private Coroutine _pulseCoroutine;
+
+    private void Awake()
+    {
+        AutoWireReferences();
+    }
+
+    private void OnValidate()
+    {
+        AutoWireReferences();
+    }
+
+    private void AutoWireReferences()
+    {
+        if (txt_Name == null)
+            txt_Name = transform.Find("NameText")?.GetComponent<TMP_Text>();
+
+        if (txt_Class == null)
+            txt_Class = transform.Find("ClassText")?.GetComponent<TMP_Text>();
+
+        if (txt_Stars == null)
+            txt_Stars = transform.Find("StarText")?.GetComponent<TMP_Text>();
+
+        if (txt_Level == null)
+            txt_Level = transform.Find("LevelText")?.GetComponent<TMP_Text>();
+
+        if (EpitaphLine == null)
+            EpitaphLine = transform.Find("StatusText")?.GetComponent<TMP_Text>();
+    }
 
     public void Populate(HeroInstance hero)
     {
@@ -55,7 +84,7 @@ public class HeroCardUI : MonoBehaviour
         if (DeployBadge != null)
             DeployBadge.SetActive(hero.isDeployed);
         if (txt_Deploy != null)
-            txt_Deploy.text = "(*) ON MISSION";
+            txt_Deploy.text = "ON MISSION";
         if (LockIcon != null)
             LockIcon.gameObject.SetActive(hero.isDeployed);
 
@@ -64,7 +93,7 @@ public class HeroCardUI : MonoBehaviour
         {
             if (hero.status == HeroStatus.Dead)
             {
-                txt_CP.text = "—";
+                txt_CP.text = "-";
                 txt_CP.color = new Color32(0x2A, 0x20, 0x20, 0xFF);
             }
             else
@@ -121,6 +150,10 @@ public class HeroCardUI : MonoBehaviour
                 }
             }
         }
+        else if (txt_Stars != null)
+        {
+            txt_Stars.text = $"STAR {Mathf.Max(1, hero.starRating)}";
+        }
 
         // Class Tag
         if (txt_Class != null)
@@ -142,7 +175,7 @@ public class HeroCardUI : MonoBehaviour
             if (hero.status == HeroStatus.Dead)
             {
                 EpitaphLine.gameObject.SetActive(true);
-                EpitaphLine.text = $"Fell on Floor {hero.deathFloor} · Day {hero.deathDay}";
+                EpitaphLine.text = $"Fell on Floor {hero.deathFloor} - Day {hero.deathDay}";
             }
             else
             {

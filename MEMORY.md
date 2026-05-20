@@ -11,6 +11,8 @@
 - Main template assets: `HeroData`, `SkillData`, `EnemyData`, `TowerFloor`
 - Hero lookup: `HeroDatabase` indexes hero templates by stable ID and supports future JSON import records
 - Main runtime data: `HeroInstance`, `GameState`, `SkillInstance`, `QuestSaveData`
+- Hero primary stat model: `Strength`, `Intelligence`, `HP`, `Agility`, `Star`
+- Roster UI is now runtime-generated from the hero list instead of relying on the old prefab wiring
 
 ## Current Folder Truth
 - Code lives mainly in `Assets/Scripts/`
@@ -25,6 +27,7 @@
 - `HeroData` is read-only template data
 - `HeroInstance` stores the mutable history of one summoned hero
 - `HeroDatabase` is the lookup layer for hero templates
+- New hero templates should author the primary stat block first, with legacy combat fields used only as fallback during migration
 - `GameState` is the only save-root object
 - UI should react to events from managers rather than mutating state directly
 - Battle should use runtime snapshots, not raw `ScriptableObject` references

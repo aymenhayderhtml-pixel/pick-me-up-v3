@@ -84,6 +84,46 @@ public class DetailPanelUI : MonoBehaviour
 
     private Material _grayscaleMaterialInstance;
 
+    private void Awake()
+    {
+        AutoWireReferences();
+    }
+
+    private void OnValidate()
+    {
+        AutoWireReferences();
+    }
+
+    private void AutoWireReferences()
+    {
+        if (txt_NameText == null) txt_NameText = FindText("txt_NameText") ?? FindText("NameText");
+        if (txt_EarnedTitle == null) txt_EarnedTitle = FindText("txt_EarnedTitle");
+        if (txt_LevelXP == null) txt_LevelXP = FindText("txt_LevelXP");
+        if (txt_CurrentClass == null) txt_CurrentClass = FindText("txt_CurrentClass");
+        if (txt_PrevClass == null) txt_PrevClass = FindText("txt_PrevClass");
+        if (txt_StatusText == null) txt_StatusText = FindText("txt_StatusText");
+        if (txt_CauseOfDeath == null) txt_CauseOfDeath = FindText("txt_CauseOfDeath");
+        if (txt_DayLine == null) txt_DayLine = FindText("txt_DayLine");
+        if (txt_SkillName == null) txt_SkillName = FindText("txt_SkillName");
+        if (txt_SkillDesc == null) txt_SkillDesc = FindText("txt_SkillDesc");
+        if (Portrait == null) Portrait = FindDeepChild(transform, "Portrait")?.GetComponent<RawImage>();
+        if (btn_Close == null) btn_Close = FindButton("btn_Close");
+    }
+
+    private TMP_Text FindText(string name) => FindDeepChild(transform, name)?.GetComponent<TMP_Text>();
+    private Button FindButton(string name) => FindDeepChild(transform, name)?.GetComponent<Button>();
+    private static Transform FindDeepChild(Transform parent, string name)
+    {
+        if (parent == null) return null;
+        if (parent.name == name) return parent;
+        foreach (Transform child in parent)
+        {
+            var result = FindDeepChild(child, name);
+            if (result != null) return result;
+        }
+        return null;
+    }
+
     public void Populate(HeroInstance hero, DetailPanelMode mode)
     {
         // --- Identity ---
@@ -97,17 +137,18 @@ public class DetailPanelUI : MonoBehaviour
         if (txt_EarnedTitle != null)
         {
             txt_EarnedTitle.gameObject.SetActive(hero.earnedTitle != null);
-            txt_EarnedTitle.text = hero.earnedTitle != null ? $"✦ {hero.earnedTitle} ✦" : "";
+            txt_EarnedTitle.text = hero.earnedTitle != null ? hero.earnedTitle : "";
         }
 
         if (txt_LevelXP != null)
         {
-            txt_LevelXP.text = $"Lv {hero.level} · EXP {hero.currentXP} / {hero.xpToNextLevel}";
+            txt_LevelXP.text = $"Lv {hero.level} - EXP {hero.currentXP} / {hero.xpToNextLevel}";
         }
 
         if (Portrait != null && hero.data != null && hero.data.portrait != null)
         {
             Portrait.texture = hero.data.portrait.texture;
+            Portrait.color = Color.white;
         }
 
         ApplyStars(hero.starRating);
@@ -168,8 +209,8 @@ public class DetailPanelUI : MonoBehaviour
         if (cell_Kills != null) cell_Kills.Set(hero.kills);
         if (cell_Floor != null) cell_Floor.Set(hero.floorsCleared);
         if (cell_Missions != null) cell_Missions.Set(hero.missionsCompleted);
-        if (cell_Stars != null) cell_Stars.Set($"{hero.starRating}★");
-        if (txt_EarnedTitle_Legacy != null) txt_EarnedTitle_Legacy.text = hero.earnedTitle ?? "—";
+        if (cell_Stars != null) cell_Stars.Set($"STAR {hero.starRating}");
+        if (txt_EarnedTitle_Legacy != null) txt_EarnedTitle_Legacy.text = hero.earnedTitle ?? "-";
 
         // --- Mode-specific ---
         ApplyMode(hero, mode);
@@ -220,7 +261,7 @@ public class DetailPanelUI : MonoBehaviour
             if (cell_EpiFloor != null) cell_EpiFloor.Set(hero.deathFloor);
             if (cell_EpiKills != null) cell_EpiKills.Set(hero.kills);
             if (cell_EpiMissions != null) cell_EpiMissions.Set(hero.missionsCompleted);
-            if (cell_EpiStars != null) cell_EpiStars.Set($"{hero.starRating}★");
+        if (cell_EpiStars != null) cell_EpiStars.Set($"STAR {hero.starRating}");
             if (txt_DayLine != null) txt_DayLine.text = $"Day {hero.deathDay} of the Expedition";
 
             // Name strikethrough

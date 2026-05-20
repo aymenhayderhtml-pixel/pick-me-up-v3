@@ -6,6 +6,7 @@
 3. `QuestSystem` subscribes with anonymous lambdas in `OnEnable`, then attempts to unsubscribe with new anonymous lambdas in `OnDisable`, which will not remove the original handlers.
 4. Several combat and skill behaviors are still hardcoded by skill ID, so new skills require manual evaluator updates.
 5. `Resources.LoadAll` is still used for hero registration in `GameManager`, which is acceptable for now but should be replaced by a stronger registry when the roster grows.
+6. `ANTARIS` currently uses a placeholder portrait copied from the `ISLAT HAN` archive image because no dedicated source image was found yet.
 
 ## Watchlist
 - Save schema changes need versioning before release
@@ -24,4 +25,3 @@ Repro:
 Suggested Fix:
 Owner:
 ```
-

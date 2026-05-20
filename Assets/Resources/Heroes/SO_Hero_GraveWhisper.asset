@@ -14,6 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   heroName: Grave Whisper
   heroClass: 4
+
+  strength: 26
+  intelligence: 4
+  hp: 65
+  agility: 18
   starRating: 3
   portrait: {fileID: 0}
   summonQuote: I move through the shadows.
@@ -32,3 +37,4 @@ MonoBehaviour:
   spdPerLevel: 0.2
   baseCritChance: 0.05
   baseCritMult: 1.5
+

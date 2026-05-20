@@ -156,10 +156,10 @@ MonoBehaviour:
   detailPanel: {fileID: 1538692210}
   txt_Gold: {fileID: 845045163}
   txt_Gems: {fileID: 613099676}
-  btn_Back: {fileID: 0}
+  btn_Back: {fileID: 1645538772}
   btn_FilterAll: {fileID: 306969306}
   btn_FilterActive: {fileID: 2123149989}
-  btn_FilterFallen: {fileID: 566426072}
+  btn_FilterFallen: {fileID: 0}
 --- !u!114 &15519575
 MonoBehaviour:
   m_ObjectHideFlags: 0

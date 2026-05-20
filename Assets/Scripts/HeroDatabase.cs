@@ -10,11 +10,14 @@ public class HeroTemplateJsonRecord
     public string assetName;
     public string heroName;
     public string heroClass;
+    public int strength;
+    public int intelligence;
+    public int hp;
+    public int agility;
     public int starRating = 1;
     public string summonQuote;
     public string possessedSkillId;
     public float dropWeight = 1f;
-    public BaseStats baseStats = new BaseStats();
     public List<PersonalityTrait> possibleTraits = new List<PersonalityTrait>();
     public float hpPerLevel = 5f;
     public float atkPerLevel = 1.5f;
@@ -163,11 +166,14 @@ public sealed class HeroDatabase
                 assetName = template.name,
                 heroName = template.heroName,
                 heroClass = template.heroClass.ToString(),
+                strength = template.Strength,
+                intelligence = template.Intelligence,
+                hp = template.Vitality,
+                agility = template.Agility,
                 starRating = template.starRating,
                 summonQuote = template.summonQuote,
                 possessedSkillId = template.possessedSkillId,
                 dropWeight = template.dropWeight,
-                baseStats = template.baseStats != null ? template.baseStats : new BaseStats(),
                 possibleTraits = template.possibleTraits != null
                     ? new List<PersonalityTrait>(template.possibleTraits)
                     : new List<PersonalityTrait>(),

@@ -14,6 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   heroName: Iron Saint
   heroClass: 3
+
+  strength: 22
+  intelligence: 16
+  hp: 130
+  agility: 12
   starRating: 5
   portrait: {fileID: 0}
   summonQuote: I bless our weapons in divine steel.
@@ -34,3 +39,4 @@ MonoBehaviour:
   spdPerLevel: 0.2
   baseCritChance: 0.05
   baseCritMult: 1.5
+

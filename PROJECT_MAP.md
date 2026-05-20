@@ -73,7 +73,7 @@ This is the navigation map for agents. Use it to find the right system before op
   - `GachaCardFlip`
 - UI
   - `LobbyUI`
-  - `RosterUI`
+  - `RosterUI` (runtime-generated hero cards + detail panel selection)
   - `BattleUI`
   - `MemorialUI`
   - `SynthesisUI`

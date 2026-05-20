@@ -56,69 +56,37 @@ public class GameManager : MonoBehaviour
         if (State.gold < 100000) State.gold = 100000;
         if (State.gems < 50000) State.gems = 50000;
 
-        // Auto-populate 4 beautiful mock heroes on a fresh game for immediate visual verification!
+        // Auto-populate the starter roster on a fresh game.
         if (State.roster.Count == 0)
         {
-            // Fallback templates if registry is empty
-            HeroData t0 = HeroDatabase != null && HeroDatabase.Count > 0 ? HeroDatabase.AllTemplates[0] : null;
-            HeroData t1 = HeroDatabase != null && HeroDatabase.Count > 1 ? HeroDatabase.AllTemplates[1] : t0;
-            HeroData t2 = HeroDatabase != null && HeroDatabase.Count > 2 ? HeroDatabase.AllTemplates[2] : t0;
-            HeroData t3 = HeroDatabase != null && HeroDatabase.Count > 3 ? HeroDatabase.AllTemplates[3] : t0;
+            string[] starterHeroIds =
+            {
+                "ISLAT_HAN",
+                "ENOK",
+                "CHLOE",
+                "GIDE",
+                "HANSEN",
+                "DIKA",
+                "JENNA_CIRAI",
+                "HAN_ISRAT",
+                "AARON_DELCUT",
+                "ANTARIS"
+            };
 
-            // Check if Islan Han was created
-            HeroData islanHanData = GetHeroData("SO_Hero_IslanHan");
-            if (islanHanData != null) t0 = islanHanData; // Inject him as the first hero!
-            
-            // 1. Fresh Vanguard (Melee Branch) or Islan Han
-            var h1 = new HeroInstance(t0);
-            h1.heroName = t0 != null ? t0.heroName : "Arthur Pendragon";
-            h1.heroClass = t0 != null ? t0.heroClass : HeroClass.Vanguard;
-            h1.level = 1;
-            h1.starRating = 4;
-            h1.fatigue = 20; // Fresh
-            h1.currentSTR = 22; h1.maxSTR = 22;
-            h1.currentHP = 120; h1.maxHP = 120;
-            h1.status = HeroStatus.Active;
-            State.roster.Add(h1);
-            
-            // 2. Strained Elementalist (Magic Branch)
-            var h2 = new HeroInstance(t1);
-            h2.heroName = "Rin the Conjurer";
-            h2.heroClass = HeroClass.Elementalist;
-            h2.level = 22;
-            h2.starRating = 5;
-            h2.fatigue = 60; // Strained (Orange condition orb)
-            h2.currentINT = 35; h2.maxINT = 35;
-            h2.status = HeroStatus.Active;
-            State.roster.Add(h2);
+            foreach (var heroId in starterHeroIds)
+            {
+                var template = GetHeroData(heroId);
+                if (template == null)
+                {
+                    Debug.LogWarning($"[GameManager] Starter hero template '{heroId}' was not found.");
+                    continue;
+                }
 
-            // 3. Breaking Point Assassin (Agility Branch)
-            var h3 = new HeroInstance(t2);
-            h3.heroName = "Kaelen Swiftblade";
-            h3.heroClass = HeroClass.Assassin;
-            h3.level = 8;
-            h3.starRating = 3;
-            h3.fatigue = 85; // Breaking Point (Pulsing Red condition orb)
-            h3.currentAGI = 18; h3.maxAGI = 18;
-            h3.status = HeroStatus.Active;
-            State.roster.Add(h3);
+                State.roster.Add(new HeroInstance(template));
+            }
 
-            // 4. Fallen Shadow Reaper (Fallen / Dead Valhalla Mode)
-            var h4 = new HeroInstance(t3);
-            h4.heroName = "Valerie the Lost";
-            h4.heroClass = HeroClass.ShadowReaper;
-            h4.level = 30;
-            h4.starRating = 5;
-            h4.status = HeroStatus.Dead;
-            h4.causeOfDeath = "Incinerated by Ash Dragon";
-            h4.deathFloor = 14;
-            h4.deathDay = 45;
-            h4.kills = 382;
-            h4.floorsCleared = 13;
-            h4.missionsCompleted = 42;
-            State.roster.Add(h4);
-            
-            Debug.Log("[GameManager] Sandbox Mode: Populated 4 beautiful mock heroes for instant UI visual verification!");
+            OnRosterChanged?.Invoke();
+            Debug.Log($"[GameManager] Starter roster populated with {State.roster.Count} hero(es).");
         }
 
         // Change Camera Background to Dark Gothic
@@ -446,11 +414,31 @@ public class GameManager : MonoBehaviour
 
     void InitializeHeroDatabase()
     {
-        if (allHeroData == null || allHeroData.Length == 0)
+        var resourceHeroes = Resources.LoadAll<HeroData>("Heroes") ?? Array.Empty<HeroData>();
+        var inspectorHeroes = allHeroData ?? Array.Empty<HeroData>();
+
+        var merged = new List<HeroData>(resourceHeroes.Length + inspectorHeroes.Length);
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        void AddRange(IEnumerable<HeroData> source)
         {
-            allHeroData = Resources.LoadAll<HeroData>("Heroes");
-            Debug.Log($"[GameManager] Automatically registered {allHeroData.Length} HeroData assets from Resources/Heroes/.");
+            foreach (var hero in source)
+            {
+                if (hero == null) continue;
+
+                string key = !string.IsNullOrWhiteSpace(hero.HeroId) ? hero.HeroId : hero.name;
+                if (string.IsNullOrWhiteSpace(key)) continue;
+
+                if (!seen.Add(key)) continue;
+                merged.Add(hero);
+            }
         }
+
+        AddRange(resourceHeroes);
+        AddRange(inspectorHeroes);
+
+        allHeroData = merged.ToArray();
+        Debug.Log($"[GameManager] Registered {allHeroData.Length} HeroData asset(s) for the hero database.");
 
         HeroDatabase = global::HeroDatabase.Build(allHeroData);
         var issues = HeroDatabase.Validate();

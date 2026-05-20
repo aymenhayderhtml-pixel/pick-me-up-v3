@@ -14,6 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   heroName: Crimson Blade
   heroClass: 0
+
+  strength: 22
+  intelligence: 8
+  hp: 100
+  agility: 10
   starRating: 3
   portrait: {fileID: 0}
   summonQuote: My sword is yours to command.
@@ -32,3 +37,4 @@ MonoBehaviour:
   spdPerLevel: 0.2
   baseCritChance: 0.05
   baseCritMult: 1.5
+

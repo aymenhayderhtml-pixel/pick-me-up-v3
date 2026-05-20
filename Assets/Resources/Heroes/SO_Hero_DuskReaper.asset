@@ -14,6 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   heroName: Dusk Reaper
   heroClass: 4
+
+  strength: 30
+  intelligence: 6
+  hp: 90
+  agility: 20
   starRating: 4
   portrait: {fileID: 0}
   summonQuote: The night is my domain.
@@ -33,3 +38,4 @@ MonoBehaviour:
   spdPerLevel: 0.2
   baseCritChance: 0.05
   baseCritMult: 1.5
+

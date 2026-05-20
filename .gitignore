@@ -1,63 +1,47 @@
-# Unity generated folders
-Library/
-Logs/
-Temp/
-Obj/
-UserSettings/
-.utmp/
-
-# Unity project files that are regenerated locally
-*.csproj
-*.sln
-*.slnx
-*.user
-*.unityproj
-*.pidb
-*.booproj
-*.svd
-
-# Build outputs
-Build/
-Builds/
-bin/
-dist/
-*.apk
-*.aab
-*.ipa
-*.xcodeproj
-*.xcworkspace
-
-# Unity cache / package / tooling noise
-node_modules/
-package-lock.json
+# Logs & temp
+*.log
+*.tmp
+*.swp
 npm-debug.log*
 yarn-debug.log*
-yarn-error.log*
-.idea/
-.vscode/
-.vs/
-*.log
-unity_build_log.txt
 
-# Platform and OS junk
+# Environment
+.env
+.env.*
+
+# Editors
+.vscode/
+.idea/
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+.cache/
+.parcel-cache/
+
+# Python (optional, if tools used)
+__pycache__/
+*.pyc
+
+# System files
 .DS_Store
 Thumbs.db
-desktop.ini
 
-# Coverage and test artifacts
+# Coverage
 coverage/
 htmlcov/
 .coverage
-.pytest_cache/
-.mypy_cache/
 
-# Generic temporary files
-*.tmp
-*.swp
-*.swo
+# Archives
+*.zip
+*.tar
+*.gz
+*.rar
+*.7z
+
+# Backup files
 *.bak
 *~
-
-# Large local exports / debug bundles
-pick-me-up-v3.apk
-pick-me-up-v3_BurstDebugInformation_DoNotShip/

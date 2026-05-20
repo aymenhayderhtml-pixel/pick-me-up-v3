@@ -1,80 +1,225 @@
 # AGENTS.md
 
 ## Purpose
-This repository is a Unity 6 game project. This file is the first read for every AI agent working in the repo.
+This repository is a Unity 6 game project. This file is the primary entry point for all AI coding agents working in the repo.
 
-The goal is to keep agents fast, consistent, and narrow in scope:
-- do not scan the whole `Assets/` tree
-- read only the files needed for the current task
-- update the memory docs when the project changes
-- prefer data-driven changes over hardcoded logic
+The goal is to keep agents:
+- fast
+- token-efficient
+- architecture-aware
+- narrow in scope
+- consistent across sessions
 
-## Read Order
-Use this order unless a local `AGENTS.md` overrides it:
-1. `AGENTS.md`
-2. `CURRENT_TASK.md`
-3. `PROJECT_MAP.md`
-4. The relevant system doc in `Docs/`
-5. The nearest local `AGENTS.md` for the folder being edited
-6. Only the code files needed for the task
+Agents should rely on documentation and system maps before scanning code.
 
-## Non-Negotiable Rules
-- Never scan the entire `Assets` folder just to get oriented.
-- Never edit `Library/`, `Logs/`, `ProjectSettings/`, or generated build output unless explicitly requested.
-- Never rewrite stable systems just because they look imperfect.
-- Never change a system without checking the matching doc in `Docs/`.
-- Never add new gameplay rules inside UI scripts.
-- Never store scene object references in save data.
-- Never make `ScriptableObject` templates mutable at runtime.
+---
 
-## Navigation Rules
-- Use `PROJECT_MAP.md` first when looking for a file or system.
-- Read only the system doc that matches the task.
-- If a folder has its own `AGENTS.md`, read it after this root file.
-- If a task touches multiple systems, read each system doc, but do not widen scope beyond those systems.
-- Prefer partial context loading: file header, public API, nearby dependency, then edit.
+# Architecture Philosophy
 
-## Editing Rules
-- Keep `MonoBehaviour` classes thin and lifecycle-focused.
-- Keep data definitions in `ScriptableObject` assets or serializable runtime models.
-- Keep battle logic, save logic, and UI logic separated.
-- Use events to move state changes from managers to UI.
-- If you add a new public method or data field, update the relevant doc in `Docs/`.
-- If you change a system boundary, update `PROJECT_MAP.md` and `MEMORY.md`.
+- Prefer data-driven systems over hardcoded branching.
+- Prefer composition over inheritance.
+- Separate runtime state from template data.
+- UI reflects gameplay state but does not own gameplay logic.
+- Stable systems should be extended carefully instead of rewritten.
+- Systems should communicate through events, interfaces, or data contracts instead of tight direct coupling.
+- Keep systems modular and independently understandable.
 
-## Memory Update Rules
-After any meaningful change, update the living docs:
-- `CURRENT_TASK.md` for the current work state
-- `TODO.md` for future work
-- `BUGS.md` for known issues discovered
-- `CHANGELOG.md` for completed work
-- `MEMORY.md` for stable architecture decisions
+---
 
-## Token Efficiency Rules
+# Read Order
+
+Unless overridden by a deeper local AGENTS.md:
+
+1. AGENTS.md
+2. CURRENT_TASK.md
+3. PROJECT_MAP.md
+4. Relevant system document in Docs/
+5. Nearest local AGENTS.md
+6. Only the code files required for the task
+
+Never begin by scanning the entire repository.
+
+---
+
+# Non-Negotiable Rules
+
+- Never scan the entire Assets/ tree for orientation.
+- Never rewrite stable systems without explicit reason.
+- Never widen task scope unnecessarily.
+- Never add gameplay logic inside UI scripts.
+- Never store scene object references in save files.
+- Never mutate ScriptableObject templates at runtime.
+- Never edit Library/, Logs/, Temp/, or generated build output.
+- Never introduce hidden dependencies between unrelated systems.
+- Never bypass documented architecture rules without explanation.
+
+---
+
+# Navigation Rules
+
+- Use PROJECT_MAP.md first when locating systems.
+- Read only the relevant system documentation.
+- If a folder has its own AGENTS.md, read it after the root file.
+- Prefer partial context loading:
+  - file header
+  - public API
+  - nearby dependencies
+  - then implementation
+- If a task touches multiple systems, inspect only those systems.
+
+---
+
+# Preferred Edit Strategy
+
+1. Read documentation first.
+2. Inspect public APIs and headers before full files.
+3. Make the smallest safe change possible.
+4. Avoid unrelated edits.
+5. Preserve stable architecture patterns.
+6. Update docs after structural changes.
+7. Leave clear summaries for future agents.
+
+---
+
+# Uncertainty Rules
+
+- If system intent is unclear, inspect docs before editing.
+- If architecture conflicts appear, explain before implementing.
+- Avoid speculative refactors.
+- Prefer minimal safe edits over broad rewrites.
+- If a dependency chain is unclear, stop expanding scope and consult PROJECT_MAP.md.
+
+---
+
+# Runtime Data Rules
+
+- ScriptableObjects are immutable templates.
+- Runtime HP, progression, buffs, upgrades, cooldowns, and temporary state belong in runtime models.
+- Save systems serialize runtime data only.
+- Asset templates must never store live gameplay state.
+- Runtime instances should be reconstructible from template IDs + save data.
+
+---
+
+# Dependency Direction
+
+- UI may depend on gameplay systems.
+- Gameplay systems must not depend on UI.
+- Data definitions should not depend on scene logic.
+- Save systems must not depend directly on UI systems.
+- Runtime systems should avoid direct dependencies on presentation layers.
+
+---
+
+# Editing Rules
+
+- Keep MonoBehaviour classes thin and lifecycle-focused.
+- Keep gameplay logic outside UI controllers.
+- Prefer event-driven communication between systems.
+- Keep manager responsibilities narrow.
+- Use ScriptableObjects for static content definitions.
+- Use serializable runtime models for mutable state.
+- Prefer reusable systems over one-off hardcoded solutions.
+- Avoid singleton sprawl.
+
+---
+
+# Folder Ownership
+
+- Scripts/Core = global runtime services
+- Scripts/Combat = combat-only systems
+- Scripts/UI = presentation and interaction
+- Scripts/Data = ScriptableObject definitions
+- Scripts/Heroes = hero runtime logic
+- Scripts/Save = persistence and serialization
+- Scripts/Summon = gacha and reward generation
+- Scripts/Inventory = inventory and equipment logic
+- Do not move responsibilities across folders casually.
+
+---
+
+# Performance Rules
+
+- Avoid FindObjectOfType during gameplay loops.
+- Cache expensive lookups.
+- Avoid allocations in hot combat paths.
+- Prefer object pooling for repeated spawned objects.
+- Avoid unnecessary Update() usage.
+- Prefer event-driven updates when possible.
+
+---
+
+# Memory Update Rules
+
+After meaningful changes, update living documentation:
+
+- CURRENT_TASK.md = active work state
+- TODO.md = planned future work
+- BUGS.md = discovered issues
+- CHANGELOG.md = completed work
+- MEMORY.md = stable architecture decisions
+
+Documentation is part of the project architecture.
+
+---
+
+# Token Efficiency Rules
+
 - Read the smallest possible set of files.
-- Prefer summaries and headers over full-file rereads.
-- Do not reread unchanged systems.
-- Capture system-level knowledge in docs so later agents do not need to rescan code.
-- When finishing a task, leave a short doc note instead of reopening many files.
+- Prefer summaries over full-file rescans.
+- Avoid rereading unchanged systems.
+- Use docs to preserve architecture understanding.
+- Leave concise summaries after completing tasks.
+- Do not consume tokens rediscovering documented systems.
 
-## Unity Conventions
-- `GameManager` is the persistent runtime hub.
-- `SceneLoader` and `AudioManager` are persistent scene services.
-- `CombatManager` is scene-local.
-- `HeroData`, `SkillData`, `EnemyData`, and `TowerFloor` are read-only templates.
-- `HeroInstance`, `GameState`, and save DTOs are runtime data.
-- `Resources` is supported for now, but Addressables is the future target.
+---
 
-## Local AGENTS Inheritance
-- Root `AGENTS.md` applies everywhere.
-- A deeper `AGENTS.md` adds local rules and can narrow scope further.
-- The nearest matching `AGENTS.md` wins when rules conflict.
-- If a folder-specific doc says "do not touch unrelated files", obey it even if the root file is broader.
+# Unity Conventions
 
-## Script Header Template
-Use this header in new or heavily edited scripts:
+- GameManager is the persistent runtime hub.
+- CombatManager is scene-local.
+- SceneLoader and AudioManager are persistent services.
+- HeroData, SkillData, EnemyData, and TowerFloor are immutable templates.
+- HeroInstance and GameState are runtime models.
+- Resources is temporary infrastructure.
+- Addressables are the future content-loading target.
 
-```csharp
+---
+
+# Data Pipeline Philosophy
+
+Preferred future pipeline:
+
+Google Sheets
+↓
+JSON Export
+↓
+Unity Importer
+↓
+ScriptableObject Generation
+↓
+Runtime Database
+↓
+Gameplay Systems
+
+The spreadsheet is the source of truth for balance and content.
+
+---
+
+# Local AGENTS Inheritance
+
+- Root AGENTS.md applies globally.
+- Nested AGENTS.md files add local constraints.
+- The nearest AGENTS.md takes priority during conflicts.
+- Folder-level rules may narrow scope further.
+- Local AGENTS.md files should stay concise and system-specific.
+
+---
+
+# Script Header Template
+
+Use this header in new or heavily modified scripts:
+
 /*
 Purpose:
 Responsibilities:
@@ -84,15 +229,18 @@ Warnings:
 Modification Rules:
 Related Systems:
 */
-```
 
-## Where To Look
-- `Docs/HERO_SYSTEM.md` for hero templates and runtime hero state
-- `Docs/COMBAT_SYSTEM.md` for battle flow and combat helpers
-- `Docs/SUMMON_SYSTEM.md` for gacha, pity, and summon flow
-- `Docs/UI_SYSTEM.md` for scene UI controllers and prefab patterns
-- `Docs/SAVE_SYSTEM.md` for JSON save/load rules
-- `Docs/INVENTORY_SYSTEM.md` for planned item and equipment work
-- `Docs/SKILL_SYSTEM.md` for skill data and combat skill execution
-- `Docs/DATA_PIPELINE.md` for content pipeline and validation
+---
 
+# Where To Look
+
+- Docs/HERO_SYSTEM.md
+- Docs/COMBAT_SYSTEM.md
+- Docs/SUMMON_SYSTEM.md
+- Docs/UI_SYSTEM.md
+- Docs/SAVE_SYSTEM.md
+- Docs/INVENTORY_SYSTEM.md
+- Docs/SKILL_SYSTEM.md
+- Docs/DATA_PIPELINE.md
+
+Always prefer docs before large code scans.

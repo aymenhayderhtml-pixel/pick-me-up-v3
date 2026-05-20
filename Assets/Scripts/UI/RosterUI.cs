@@ -395,7 +395,7 @@ public class RosterUI : MonoBehaviour
         vertical.childForceExpandWidth = true;
         vertical.childForceExpandHeight = false;
 
-        var portrait = CreateChild(card.transform, "Portrait", typeof(RawImage), typeof(LayoutElement)).GetComponent<RawImage>();
+        var portrait = CreateChild(card.transform, "Portrait", typeof(Image), typeof(LayoutElement)).GetComponent<Image>();
         var portraitLayout = portrait.GetComponent<LayoutElement>();
         portraitLayout.preferredHeight = 130f;
         portraitLayout.minHeight = 110f;
@@ -451,35 +451,22 @@ public class RosterUI : MonoBehaviour
         return text;
     }
 
-    private static void ApplyPortrait(RawImage target, Sprite portrait)
+    private static void ApplyPortrait(Image target, Sprite portrait)
     {
         if (target == null)
             return;
 
         if (portrait == null || portrait.texture == null)
         {
-            target.texture = null;
-            target.uvRect = new Rect(0f, 0f, 1f, 1f);
+            target.sprite = null;
+            target.color = new Color32(0x2A, 0x22, 0x32, 0xFF);
             return;
         }
 
-        target.texture = portrait.texture;
-
-        var texRect = portrait.textureRect;
-        var tex = portrait.texture;
-        if (tex != null && tex.width > 0f && tex.height > 0f)
-        {
-            target.uvRect = new Rect(
-                texRect.x / tex.width,
-                texRect.y / tex.height,
-                texRect.width / tex.width,
-                texRect.height / tex.height
-            );
-        }
-        else
-        {
-            target.uvRect = new Rect(0f, 0f, 1f, 1f);
-        }
+        target.sprite = portrait;
+        target.type = Image.Type.Simple;
+        target.preserveAspect = true;
+        target.color = Color.white;
     }
 
     private void SelectHero(HeroInstance hero)

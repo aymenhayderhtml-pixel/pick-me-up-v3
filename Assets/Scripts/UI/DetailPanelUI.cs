@@ -13,7 +13,7 @@ public class DetailPanelUI : MonoBehaviour
     public TMP_Text txt_LockLabel;
 
     [Header("Hero Header")]
-    public RawImage Portrait;
+    public Image Portrait;
     public Image[] CornerDecals; // 4x gold corner brackets
     public GameObject DeployBadge;
     public TMP_Text txt_Deploy;
@@ -111,18 +111,8 @@ public class DetailPanelUI : MonoBehaviour
             var portraitTransform = FindDeepChild(transform, "Portrait");
             if (portraitTransform != null)
             {
-                Portrait = portraitTransform.GetComponent<RawImage>();
-                if (Portrait == null)
-                {
-                    var image = portraitTransform.GetComponent<Image>();
-                    if (image != null)
-                    {
-                        Portrait = image.gameObject.AddComponent<RawImage>();
-                        Portrait.texture = image.sprite != null ? image.sprite.texture : null;
-                        Portrait.uvRect = new Rect(0f, 0f, 1f, 1f);
-                        image.enabled = false;
-                    }
-                }
+                var image = portraitTransform.GetComponent<Image>();
+                Portrait = image;
             }
         }
         if (btn_Close == null) btn_Close = FindButton("btn_Close");
@@ -142,36 +132,22 @@ public class DetailPanelUI : MonoBehaviour
         return null;
     }
 
-    private static void ApplyPortrait(RawImage target, Sprite portrait)
+    private static void ApplyPortrait(Image target, Sprite portrait)
     {
         if (target == null)
             return;
 
         if (portrait == null || portrait.texture == null)
         {
-            target.texture = null;
-            target.uvRect = new Rect(0f, 0f, 1f, 1f);
+            target.sprite = null;
+            target.color = new Color32(0xFF, 0xFF, 0xFF, 0xFF);
             return;
         }
 
-        target.texture = portrait.texture;
-        target.enabled = true;
-
-        var texRect = portrait.textureRect;
-        var tex = portrait.texture;
-        if (tex != null && tex.width > 0f && tex.height > 0f)
-        {
-            target.uvRect = new Rect(
-                texRect.x / tex.width,
-                texRect.y / tex.height,
-                texRect.width / tex.width,
-                texRect.height / tex.height
-            );
-        }
-        else
-        {
-            target.uvRect = new Rect(0f, 0f, 1f, 1f);
-        }
+        target.sprite = portrait;
+        target.type = Image.Type.Simple;
+        target.preserveAspect = true;
+        target.color = Color.white;
     }
 
     public void Populate(HeroInstance hero, DetailPanelMode mode)

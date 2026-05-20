@@ -244,3 +244,66 @@ Related Systems:
 - Docs/DATA_PIPELINE.md
 
 Always prefer docs before large code scans.
+
+---
+
+# Qwen Audit Prompt
+
+Use this prompt when asking Qwen to diagnose the repo with maximum signal and minimum token waste.
+
+## Copy/Paste Prompt
+
+You are auditing a Unity 6 project for real bugs, not style.
+
+Goal:
+- Find all current gameplay, UI, save/load, scene, data, and wiring problems that are directly verifiable from the files you open.
+- Use as few tokens as possible.
+- Focus on root causes, not symptoms.
+- If something is intentional or uncertain, mark it as `needs confirmation`.
+
+Current known pain points to inspect first:
+- roster portraits are still blank even though hero names and stats display
+- roster generation uses template heroes
+- skill data was missing before and now exists as starter assets
+- scene loading may still reference missing or fallback scenes
+
+Read order:
+1. `AGENTS.md`
+2. `CURRENT_TASK.md`
+3. `PROJECT_MAP.md`
+4. `Docs/HERO_SYSTEM.md`
+5. `Docs/UI_SYSTEM.md`
+6. `Docs/SKILL_SYSTEM.md`
+7. Only the exact code files needed to verify a suspected issue
+
+Rules:
+- Do not scan the whole repo.
+- Do not inspect unrelated systems.
+- Do not give generic architecture advice unless it explains the bug.
+- Use exact file paths and line numbers.
+- If multiple files share the same root cause, report the root cause once and list all affected files.
+- If a file is not the source of the bug, ignore it.
+- If a bug is only visible in the editor or scene setup, say so explicitly.
+
+Output format:
+
+```md
+# Findings
+| Severity | File | Evidence | Problem | Fix |
+| --- | --- | --- | --- | --- |
+
+# Needs Confirmation
+| File | Why uncertain | What to check |
+| --- | --- | --- | --- |
+
+# Conclusion
+- State whether the issue is a real bug, missing content, or wiring problem.
+- State the minimum fix needed.
+```
+
+What to verify for the roster issue:
+- whether `HeroData.portrait` is actually assigned in the template assets
+- whether the roster card and detail panel are using the correct `RawImage`
+- whether the prefab or scene has the wrong child name or missing component
+- whether the selected hero is a runtime preview copy with a stripped portrait reference
+- whether portraits fail because the `Sprite` asset import type or texture assignment is wrong

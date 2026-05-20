@@ -53,6 +53,7 @@ This is the navigation map for agents. Use it to find the right system before op
 - Player progression
   - `HeroData`
   - `HeroInstance`
+  - `HeroDatabase`
   - `HeroUtils`
   - `MoraleSystem`
   - `QuestSystem`
@@ -152,9 +153,9 @@ flowchart LR
 
 ## Files To Inspect First By Task Type
 - Hero logic: `Assets/Scripts/HeroData.cs`, `Assets/Scripts/HeroInstance.cs`, `Docs/HERO_SYSTEM.md`
+- Hero database: `Assets/Scripts/HeroDatabase.cs`, `Docs/HERO_SYSTEM.md`
 - Combat logic: `Assets/Scripts/CombatManager.cs`, `Assets/Scripts/CombatSkillEvaluator.cs`, `Docs/COMBAT_SYSTEM.md`
 - Summon logic: `Assets/Scripts/GachaSystem.cs`, `Assets/Scripts/UI/SummonUI.cs`, `Docs/SUMMON_SYSTEM.md`
 - UI changes: the relevant UI script plus `Docs/UI_SYSTEM.md`
 - Save changes: `Assets/Scripts/GameState_SaveSystem.cs`, `Docs/SAVE_SYSTEM.md`
 - Skill changes: `Assets/Scripts/SkillData.cs`, `Assets/Scripts/SkillInstance.cs`, `Docs/SKILL_SYSTEM.md`
-

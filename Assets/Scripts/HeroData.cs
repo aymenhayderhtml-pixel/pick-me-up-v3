@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -47,6 +48,8 @@ public enum PersonalityTrait
 public class HeroData : ScriptableObject
 {
     [Header("Identity")]
+    [Tooltip("Stable ID used by save data, databases, and future JSON imports.")]
+    [SerializeField] private string heroId;
     public string heroName;
     public HeroClass heroClass;
     public int starRating;          // 1–5
@@ -73,4 +76,20 @@ public class HeroData : ScriptableObject
     [Header("Crit Properties")]
     public float baseCritChance = 0.05f;
     public float baseCritMult = 1.5f;
+
+    public string HeroId => string.IsNullOrWhiteSpace(heroId) ? name : heroId.Trim();
+    public string DisplayName => string.IsNullOrWhiteSpace(heroName) ? HeroId : heroName;
+
+    public void SetHeroId(string value)
+    {
+        heroId = value;
+    }
+
+    private void OnValidate()
+    {
+        if (string.IsNullOrWhiteSpace(heroId))
+        {
+            heroId = name;
+        }
+    }
 }

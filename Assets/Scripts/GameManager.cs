@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -15,6 +16,7 @@ public class GameManager : MonoBehaviour
     // ── Hero data registry (assign ALL HeroData SOs in Inspector) ──
     [Header("Hero Registry")]
     public HeroData[] allHeroData;      // drag all SO_Hero_* assets here
+    public HeroDatabase HeroDatabase { get; private set; } = new HeroDatabase();
 
     // ── Live State ────────────────────────────────────────
     [HideInInspector] public GameState State = new GameState();
@@ -45,12 +47,7 @@ public class GameManager : MonoBehaviour
         QuestSystem = GetComponent<QuestSystem>();
         FacilityManager = GetComponent<FacilityManager>();
 
-        // Auto-discover HeroData assets in Resources/Heroes/ if registry is unassigned/empty
-        if (allHeroData == null || allHeroData.Length == 0)
-        {
-            allHeroData = Resources.LoadAll<HeroData>("Heroes");
-            Debug.Log($"[GameManager] Automatically registered {allHeroData.Length} HeroData assets from Resources/Heroes/.");
-        }
+        InitializeHeroDatabase();
 
         SaveSystem.Initialize();
         LoadGame();
@@ -63,10 +60,10 @@ public class GameManager : MonoBehaviour
         if (State.roster.Count == 0)
         {
             // Fallback templates if registry is empty
-            HeroData t0 = allHeroData != null && allHeroData.Length > 0 ? allHeroData[0] : null;
-            HeroData t1 = allHeroData != null && allHeroData.Length > 1 ? allHeroData[1] : t0;
-            HeroData t2 = allHeroData != null && allHeroData.Length > 2 ? allHeroData[2] : t0;
-            HeroData t3 = allHeroData != null && allHeroData.Length > 3 ? allHeroData[3] : t0;
+            HeroData t0 = HeroDatabase != null && HeroDatabase.Count > 0 ? HeroDatabase.AllTemplates[0] : null;
+            HeroData t1 = HeroDatabase != null && HeroDatabase.Count > 1 ? HeroDatabase.AllTemplates[1] : t0;
+            HeroData t2 = HeroDatabase != null && HeroDatabase.Count > 2 ? HeroDatabase.AllTemplates[2] : t0;
+            HeroData t3 = HeroDatabase != null && HeroDatabase.Count > 3 ? HeroDatabase.AllTemplates[3] : t0;
 
             // Check if Islan Han was created
             HeroData islanHanData = GetHeroData("SO_Hero_IslanHan");
@@ -139,12 +136,12 @@ public class GameManager : MonoBehaviour
     // ─────────────────────────────────────────────────────
     public HeroData GetHeroData(string heroDataId)
     {
-        return allHeroData.FirstOrDefault(h => h.name == heroDataId);
+        return HeroDatabase != null ? HeroDatabase.Get(heroDataId) : null;
     }
 
     public HeroData[] GetPoolByStars(int stars)
     {
-        return allHeroData.Where(h => h.starRating == stars).ToArray();
+        return HeroDatabase != null ? HeroDatabase.GetPoolByStars(stars) : Array.Empty<HeroData>();
     }
 
     // ─────────────────────────────────────────────────────
@@ -446,4 +443,20 @@ public class GameManager : MonoBehaviour
     }
 
     public void LoadGame() => State = SaveSystem.Load() ?? new GameState();
+
+    void InitializeHeroDatabase()
+    {
+        if (allHeroData == null || allHeroData.Length == 0)
+        {
+            allHeroData = Resources.LoadAll<HeroData>("Heroes");
+            Debug.Log($"[GameManager] Automatically registered {allHeroData.Length} HeroData assets from Resources/Heroes/.");
+        }
+
+        HeroDatabase = global::HeroDatabase.Build(allHeroData);
+        var issues = HeroDatabase.Validate();
+        if (issues.Count > 0)
+        {
+            Debug.LogWarning($"[GameManager] HeroDatabase validation reported {issues.Count} issue(s).\n- {string.Join("\n- ", issues)}");
+        }
+    }
 }

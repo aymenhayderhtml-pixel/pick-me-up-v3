@@ -9,6 +9,7 @@
 - Persistent utility services: `SceneLoader`, `AudioManager`
 - Scene-local battle system: `CombatManager`
 - Main template assets: `HeroData`, `SkillData`, `EnemyData`, `TowerFloor`
+- Hero lookup: `HeroDatabase` indexes hero templates by stable ID and supports future JSON import records
 - Main runtime data: `HeroInstance`, `GameState`, `SkillInstance`, `QuestSaveData`
 
 ## Current Folder Truth
@@ -23,6 +24,7 @@
 ## Architecture Decisions To Preserve
 - `HeroData` is read-only template data
 - `HeroInstance` stores the mutable history of one summoned hero
+- `HeroDatabase` is the lookup layer for hero templates
 - `GameState` is the only save-root object
 - UI should react to events from managers rather than mutating state directly
 - Battle should use runtime snapshots, not raw `ScriptableObject` references
@@ -58,4 +60,3 @@ Use these rules to keep AI context small:
 - Inventory and equipment will be data-driven before they are feature-complete
 - Addressables will likely replace most `Resources` lookups later
 - Future content import will come from a spreadsheet-to-JSON pipeline
-

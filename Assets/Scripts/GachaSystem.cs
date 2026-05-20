@@ -69,7 +69,7 @@ public static class GachaSystem
         HeroData data = PickHeroFromPool(gm, stars);
         if (data == null)
         {
-            Debug.LogError($"[GachaSystem] No HeroData found for {stars}★ — check allHeroData in GameManager.");
+            Debug.LogError($"[GachaSystem] No HeroData found for {stars}★ — check HeroDatabase in GameManager.");
             return null;
         }
 

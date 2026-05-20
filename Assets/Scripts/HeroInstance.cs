@@ -86,8 +86,8 @@ public class HeroInstance
     public HeroInstance(HeroData data)
     {
         instanceId = Guid.NewGuid().ToString();
-        heroDataId = data != null ? data.name : "MockData";
-        heroName = data != null ? data.heroName : "Unknown Hero";
+        heroDataId = data != null ? data.HeroId : "MockData";
+        heroName = data != null ? data.DisplayName : "Unknown Hero";
         starRating = data != null ? data.starRating : 1;
         level = 1;
         currentXP = 0;
@@ -122,11 +122,11 @@ public class HeroInstance
         // Pick Me Up Manhwa Style: 1-star heroes start with NO innate skills.
         // 2-star start with 1 basic skill, 3-star and above start with 2 skills.
         skills = new List<SkillInstance>();
-        if (starRating >= 2)
+        if (data != null && starRating >= 2)
         {
             AddDefaultClassSkill(data.heroClass, 1);
         }
-        if (starRating >= 3)
+        if (data != null && starRating >= 3)
         {
             AddDefaultClassSkill(data.heroClass, 2);
         }
@@ -383,7 +383,9 @@ public class HeroInstance
         set => status = value;
     }
 
-    public HeroData data => GameManager.Instance.GetHeroData(heroDataId);
+    public HeroData data => GameManager.Instance != null ? GameManager.Instance.GetHeroData(heroDataId) : null;
+    public HeroData Template => data;
+    public string TemplateId => heroDataId;
     public string HeroName => heroName;
     public string Title => earnedTitle;
     public string Id => instanceId;

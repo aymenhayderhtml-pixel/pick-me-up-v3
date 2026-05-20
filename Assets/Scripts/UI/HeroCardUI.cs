@@ -73,10 +73,7 @@ public class HeroCardUI : MonoBehaviour
         var data = hero.data;
         if (Portrait != null)
         {
-            if (data != null && data.portrait != null)
-            {
-                Portrait.texture = data.portrait.texture;
-            }
+            ApplyPortrait(Portrait, data != null ? data.portrait : null);
             Portrait.color = hero.status == HeroStatus.Dead ? new Color32(0x60, 0x60, 0x60, 0xFF) : Color.white;
         }
 
@@ -189,6 +186,37 @@ public class HeroCardUI : MonoBehaviour
         {
             btn.onClick.RemoveAllListeners();
             btn.onClick.AddListener(OnCardTapped);
+        }
+    }
+
+    private static void ApplyPortrait(RawImage target, Sprite portrait)
+    {
+        if (target == null)
+            return;
+
+        if (portrait == null || portrait.texture == null)
+        {
+            target.texture = null;
+            target.uvRect = new Rect(0f, 0f, 1f, 1f);
+            return;
+        }
+
+        target.texture = portrait.texture;
+
+        var texRect = portrait.textureRect;
+        var tex = portrait.texture;
+        if (tex != null && tex.width > 0f && tex.height > 0f)
+        {
+            target.uvRect = new Rect(
+                texRect.x / tex.width,
+                texRect.y / tex.height,
+                texRect.width / tex.width,
+                texRect.height / tex.height
+            );
+        }
+        else
+        {
+            target.uvRect = new Rect(0f, 0f, 1f, 1f);
         }
     }
 

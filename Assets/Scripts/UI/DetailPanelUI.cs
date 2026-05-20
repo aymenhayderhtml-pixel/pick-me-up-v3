@@ -124,6 +124,37 @@ public class DetailPanelUI : MonoBehaviour
         return null;
     }
 
+    private static void ApplyPortrait(RawImage target, Sprite portrait)
+    {
+        if (target == null)
+            return;
+
+        if (portrait == null || portrait.texture == null)
+        {
+            target.texture = null;
+            target.uvRect = new Rect(0f, 0f, 1f, 1f);
+            return;
+        }
+
+        target.texture = portrait.texture;
+
+        var texRect = portrait.textureRect;
+        var tex = portrait.texture;
+        if (tex != null && tex.width > 0f && tex.height > 0f)
+        {
+            target.uvRect = new Rect(
+                texRect.x / tex.width,
+                texRect.y / tex.height,
+                texRect.width / tex.width,
+                texRect.height / tex.height
+            );
+        }
+        else
+        {
+            target.uvRect = new Rect(0f, 0f, 1f, 1f);
+        }
+    }
+
     public void Populate(HeroInstance hero, DetailPanelMode mode)
     {
         // --- Identity ---
@@ -145,9 +176,9 @@ public class DetailPanelUI : MonoBehaviour
             txt_LevelXP.text = $"Lv {hero.level} - EXP {hero.currentXP} / {hero.xpToNextLevel}";
         }
 
-        if (Portrait != null && hero.data != null && hero.data.portrait != null)
+        if (Portrait != null)
         {
-            Portrait.texture = hero.data.portrait.texture;
+            ApplyPortrait(Portrait, hero.data != null ? hero.data.portrait : null);
             Portrait.color = Color.white;
         }
 

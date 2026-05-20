@@ -401,10 +401,7 @@ public class RosterUI : MonoBehaviour
         portraitLayout.minHeight = 110f;
         portraitLayout.flexibleHeight = 0f;
         portrait.color = new Color32(0x2A, 0x22, 0x32, 0xFF);
-        if (hero.data != null && hero.data.portrait != null)
-        {
-            portrait.texture = hero.data.portrait.texture;
-        }
+        ApplyPortrait(portrait, hero.data != null ? hero.data.portrait : null);
 
         var starText = CreateTextElement(card.transform, "txt_Stars", $"STAR {Mathf.Max(1, hero.starRating)}", 18, FontStyles.Bold, TextAlignmentOptions.Left);
         starText.color = new Color32(0xC9, 0xA8, 0x4C, 0xFF);
@@ -452,6 +449,37 @@ public class RosterUI : MonoBehaviour
         layout.preferredHeight = fontSize + 8f;
         layout.minHeight = fontSize + 4f;
         return text;
+    }
+
+    private static void ApplyPortrait(RawImage target, Sprite portrait)
+    {
+        if (target == null)
+            return;
+
+        if (portrait == null || portrait.texture == null)
+        {
+            target.texture = null;
+            target.uvRect = new Rect(0f, 0f, 1f, 1f);
+            return;
+        }
+
+        target.texture = portrait.texture;
+
+        var texRect = portrait.textureRect;
+        var tex = portrait.texture;
+        if (tex != null && tex.width > 0f && tex.height > 0f)
+        {
+            target.uvRect = new Rect(
+                texRect.x / tex.width,
+                texRect.y / tex.height,
+                texRect.width / tex.width,
+                texRect.height / tex.height
+            );
+        }
+        else
+        {
+            target.uvRect = new Rect(0f, 0f, 1f, 1f);
+        }
     }
 
     private void SelectHero(HeroInstance hero)

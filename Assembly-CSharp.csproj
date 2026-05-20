@@ -68,9 +68,9 @@
     <Compile Include="Assets\Scripts\UI\StatBox.cs" />
     <Compile Include="Assets\Scripts\QuestSystem.cs" />
     <Compile Include="Assets\Scripts\UI\SynthesisUI.cs" />
+    <Compile Include="Assets\Scripts\HeroDatabase.cs" />
     <Compile Include="Assets\Scripts\EnemyData.cs" />
     <Compile Include="Assets\Scripts\HeroData.cs" />
-    <Compile Include="Assets\Scripts\HeroDatabase.cs" />
     <Compile Include="Assets\Scripts\MoraleSystem.cs" />
     <Compile Include="Assets\Scripts\HeroUtils.cs" />
     <Compile Include="Assets\Scripts\TraitSystem.cs" />

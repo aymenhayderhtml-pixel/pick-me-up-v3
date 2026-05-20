@@ -14,7 +14,7 @@ public class HeroInstance
 {
     // ── Identity ──────────────────────────────────────────
     public string instanceId;           // GUID, unique per hero
-    public string heroDataId;           // matches HeroData.name (SO asset name)
+    public string heroDataId;           // matches HeroData.HeroId (stable template ID)
     public string heroName;             // copy from HeroData at summon time
     public int starRating;
     public int synthesisPromotions = 0; // tracks number of synthesis promotions applied
@@ -140,85 +140,34 @@ public class HeroInstance
     public void RecalculateStats(HeroData data)
     {
         int lvl = level - 1;
-        int bHP = data != null && data.baseStats != null ? data.baseStats.hp : 50;
-        int bATK = data != null && data.baseStats != null ? data.baseStats.atk : 10;
-        int bDEF = data != null && data.baseStats != null ? data.baseStats.def : 5;
-        int bSPD = data != null && data.baseStats != null ? data.baseStats.spd : 10;
+        int bSTR = data != null ? data.Strength : 10;
+        int bINT = data != null ? data.Intelligence : 10;
+        int bHP = data != null ? data.Vitality : 50;
+        int bAGI = data != null ? data.Agility : 10;
 
+        maxSTR = Mathf.RoundToInt(bSTR + lvl * (data != null ? data.atkPerLevel : 1.5f));
+        maxINT = Mathf.RoundToInt(bINT + lvl * (data != null ? data.defPerLevel : 0.8f));
         maxHP = Mathf.RoundToInt(bHP + lvl * (data != null ? data.hpPerLevel : 5f));
-        atk = Mathf.RoundToInt(bATK + lvl * (data != null ? data.atkPerLevel : 1.5f));
-        def = Mathf.RoundToInt(bDEF + lvl * (data != null ? data.defPerLevel : 0.8f));
-        spd = Mathf.RoundToInt(bSPD + lvl * (data != null ? data.spdPerLevel : 0.2f));
+        maxAGI = Mathf.RoundToInt(bAGI + lvl * (data != null ? data.spdPerLevel : 0.2f));
 
         // Apply 15% synthesis promotion stat boost per promotion
         if (synthesisPromotions > 0)
         {
             float mult = Mathf.Pow(1.15f, synthesisPromotions);
+            maxSTR = Mathf.RoundToInt(maxSTR * mult);
+            maxINT = Mathf.RoundToInt(maxINT * mult);
             maxHP = Mathf.RoundToInt(maxHP * mult);
-            atk = Mathf.RoundToInt(atk * mult);
-            def = Mathf.RoundToInt(def * mult);
-            spd = Mathf.RoundToInt(spd * mult);
+            maxAGI = Mathf.RoundToInt(maxAGI * mult);
         }
+
+        // Derived combat stats are still computed from the hero's primary stat block.
+        atk = Mathf.RoundToInt(maxSTR * 1.15f + maxINT * 0.35f);
+        def = Mathf.RoundToInt(maxHP * 0.25f + maxSTR * 0.15f);
+        spd = Mathf.RoundToInt(maxAGI * 1.10f + maxINT * 0.10f);
 
         currentHP = maxHP;
         critChance = data != null ? data.baseCritChance : 0.05f;
         critMult = data != null ? data.baseCritMult : 1.5f;
-
-        // Initialize and scale STR, INT, AGI based on class and starRating
-        int bSTR = 10;
-        int bINT = 10;
-        int bAGI = 10;
-
-        switch (heroClass)
-        {
-            case HeroClass.Vanguard:
-            case HeroClass.Guardian:
-            case HeroClass.Gladiator:
-            case HeroClass.Immortal:
-            case HeroClass.Warrior:
-            case HeroClass.Knight:
-                bSTR = 13 + starRating;
-                bINT = 8 + level / 3;
-                bAGI = 10 + level / 2;
-                break;
-            case HeroClass.Scout:
-            case HeroClass.Assassin:
-            case HeroClass.Ranger:
-            case HeroClass.ShadowReaper:
-            case HeroClass.Rogue:
-                bSTR = 9 + level / 2;
-                bINT = 8 + level / 3;
-                bAGI = 13 + starRating;
-                break;
-            case HeroClass.Acolyte:
-            case HeroClass.Elementalist:
-            case HeroClass.BloodMage:
-            case HeroClass.HighSage:
-            case HeroClass.Mage:
-            case HeroClass.Priest:
-                bSTR = 8 + level / 3;
-                bINT = 13 + starRating;
-                bAGI = 9 + level / 2;
-                break;
-            default:
-                bSTR = 10 + level / 2;
-                bINT = 10 + level / 2;
-                bAGI = 10 + level / 2;
-                break;
-        }
-
-        maxSTR = bSTR + lvl;
-        maxINT = bINT + lvl;
-        maxAGI = bAGI + lvl;
-
-        // Apply synthesis promotion boost to sub-stats too
-        if (synthesisPromotions > 0)
-        {
-            float mult = Mathf.Pow(1.15f, synthesisPromotions);
-            maxSTR = Mathf.RoundToInt(maxSTR * mult);
-            maxINT = Mathf.RoundToInt(maxINT * mult);
-            maxAGI = Mathf.RoundToInt(maxAGI * mult);
-        }
 
         currentSTR = maxSTR;
         currentINT = maxINT;

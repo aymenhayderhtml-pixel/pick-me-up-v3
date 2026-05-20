@@ -8,6 +8,16 @@ Defines the template-to-instance architecture for heroes. Separates immutable da
 - **HeroInstance** = Mutable runtime state. Tracks HP, level, XP, morale, status, equipment, battle history. Serialized to JSON for saves. Lives in `GameState.roster`.
 - **HeroDatabase** = Transient lookup index. Built by `GameManager` at startup. Maps `heroId` → `HeroData`. Rebuildable, not serialized.
 
+## Current Primary Hero Stats
+The game now treats these as the primary template stats for heroes:
+- `Strength`
+- `Intelligence`
+- `HP`
+- `Agility`
+- `Star`
+
+Legacy combat fields may still exist in code during migration, but the content model should now be authored around the five primary stats above.
+
 ## Architecture Diagram
 ```mermaid
 flowchart TD
@@ -27,7 +37,8 @@ flowchart TD
 - **Type:** ScriptableObject (immutable at runtime)
 - **Fields:**
   - Identity: `heroId` (stable key), `heroName`, `heroClass`, `starRating`
-  - Stats: `baseStats` (hp, atk, def, spd), per-level scaling curves
+  - Primary stats: `strength`, `intelligence`, `hp`, `agility`
+  - Legacy fallback: `baseStats` may still exist for migration compatibility
   - Traits: `possibleTraits` list, `dropWeight` for gacha
   - Skills: `possessedSkillId` reference
 - **Rules:** Never store runtime state. Never mutate after load.
@@ -39,7 +50,7 @@ flowchart TD
   - Identity: `instanceId` (GUID), `heroDataId` (links to template), `heroName`
   - Progression: `level`, `currentXP`, `xpToNextLevel`, `synthesisPromotions`
   - Live Stats: `currentHP`, `maxHP`, `atk`, `def`, `spd`, `critChance`, `critMult`
-  - Sub-stats: `currentSTR/maxSTR`, `currentINT/maxINT`, `currentAGI/maxAGI`
+  - Primary stat bars: `currentSTR/maxSTR`, `currentINT/maxINT`, `currentAGI/maxAGI`
   - Status: `morale`, `fatigue`, `HeroStatus` (Active/Fatigued/Wounded/Dead/Resting/Training)
   - History: `missionsCompleted`, `kills`, `earnedTitle`, `battleLog`
   - Equipment: `equippedWeaponId`, `equippedArmorId`, `equippedRingId`

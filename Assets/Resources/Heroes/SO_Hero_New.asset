@@ -14,6 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   heroName: HAN ISRAT
   heroClass: 5
+
+  strength: 12
+  intelligence: 12
+  hp: 12
+  agility: 12
   starRating: 1
   portrait: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
   summonQuote: 
@@ -32,3 +37,4 @@ MonoBehaviour:
   spdPerLevel: 0.2
   baseCritChance: 0.5
   baseCritMult: 1.5
+

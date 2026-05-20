@@ -223,7 +223,7 @@ public class SynthesisUI : MonoBehaviour
         {
             SynthesisResultCode.Success              => "Ready to synthesize.",
             SynthesisResultCode.TargetInvalid        => "Select a valid target hero.",
-            SynthesisResultCode.AlreadyMaxTier       => $"{_target?.HeroName} is already 5★ — max tier reached.",
+            SynthesisResultCode.AlreadyMaxTier       => $"{_target?.HeroName} is already STAR 5 - max tier reached.",
             SynthesisResultCode.NotEnoughSacrifices  => "Select 2 sacrifice heroes.",
             SynthesisResultCode.TierMismatch         => "Sacrifices must match target's star tier.",
             SynthesisResultCode.SacrificeIsTarget    => "A hero cannot sacrifice themselves.",
@@ -253,7 +253,7 @@ public class SynthesisUI : MonoBehaviour
         }
         else
         {
-            // Target pick or idle: show all eligible (Active/Fatigued/Wounded, not Dead/Deployed, not 5★)
+            // Target pick or idle: show all eligible (Active/Fatigued/Wounded, not Dead/Deployed, not STAR 5)
             pool = new List<HeroInstance>();
             foreach (var h in GameManager.Instance.GetFullRoster())
             {
@@ -274,7 +274,7 @@ public class SynthesisUI : MonoBehaviour
         }
         else if (pool.Count == 2 && (_pickMode == PickMode.Sacrifice0 || _pickMode == PickMode.Sacrifice1))
         {
-            gridHintText.text = "<color=#FFA500>⚠️ Alert: Only 2 valid sacrifices exist in your roster (No choice).</color>";
+            gridHintText.text = "<color=#FFA500>Alert: Only 2 valid sacrifices exist in your roster (No choice).</color>";
         }
 
         foreach (var hero in pool)
@@ -326,7 +326,7 @@ public class SynthesisUI : MonoBehaviour
             AudioManager.PlaySynthesisSuccess();
             resultTitleText.text = "Synthesis Complete";
             resultBodyText.text  =
-                $"{_target.HeroName} ascended from {result.OldStar}★ to {result.NewStar}★.\n\n" +
+                $"{_target.HeroName} ascended from STAR {result.OldStar} to STAR {result.NewStar}.\n\n" +
                 $"{result.Consumed[0].HeroName} and {result.Consumed[1].HeroName} " +
                 $"were consumed in the ritual.\n\n" +
                 $"Essence spent: {result.EssenceSpent}.";

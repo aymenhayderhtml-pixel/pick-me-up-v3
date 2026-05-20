@@ -57,11 +57,22 @@ public class HeroData : ScriptableObject
     public string summonQuote;      // summon quote
     public string possessedSkillId; // maps to SkillData ScriptableObject
 
+    [Header("Primary Stats")]
+    [Tooltip("Primary hero stat used by the game from now on.")]
+    public int strength;
+    [Tooltip("Primary hero stat used by the game from now on.")]
+    public int intelligence;
+    [Tooltip("Primary hero stat used by the game from now on.")]
+    public int hp;
+    [Tooltip("Primary hero stat used by the game from now on.")]
+    public int agility;
+
 
     [Header("Gacha")]
     public float dropWeight;
 
     [Header("Stats")]
+    [Tooltip("Legacy combat stat fallback. Kept for migration compatibility.")]
     public BaseStats baseStats;
 
     [Header("Traits")]
@@ -79,6 +90,10 @@ public class HeroData : ScriptableObject
 
     public string HeroId => string.IsNullOrWhiteSpace(heroId) ? name : heroId.Trim();
     public string DisplayName => string.IsNullOrWhiteSpace(heroName) ? HeroId : heroName;
+    public int Strength => strength > 0 ? strength : baseStats != null ? baseStats.atk : 0;
+    public int Intelligence => intelligence > 0 ? intelligence : baseStats != null ? baseStats.def : 0;
+    public int Vitality => hp > 0 ? hp : baseStats != null ? baseStats.hp : 0;
+    public int Agility => agility > 0 ? agility : baseStats != null ? baseStats.spd : 0;
 
     public void SetHeroId(string value)
     {
@@ -91,5 +106,15 @@ public class HeroData : ScriptableObject
         {
             heroId = name;
         }
+
+        if (baseStats == null)
+        {
+            baseStats = new BaseStats();
+        }
+
+        if (strength <= 0 && baseStats.atk > 0) strength = baseStats.atk;
+        if (intelligence <= 0 && baseStats.def > 0) intelligence = baseStats.def;
+        if (hp <= 0 && baseStats.hp > 0) hp = baseStats.hp;
+        if (agility <= 0 && baseStats.spd > 0) agility = baseStats.spd;
     }
 }

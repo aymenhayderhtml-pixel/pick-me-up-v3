@@ -12,13 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 027b7b0150ea1664f9e0863982add736, type: 3}
   m_Name: SO_Hero_IslanHan
   m_EditorClassIdentifier: 
-  heroName: ISLAN HAN
+  heroId: ISLAT_HAN
+  heroName: islat han
   heroClass: 5
-  starRating: 1
-  portrait: {fileID: 21300000, guid: 9f0c7d887adcb304085939062d16f624, type: 3}
+
+  strength: 14
+  intelligence: 10
+  hp: 12
+  agility: 12
+  portrait: {fileID: 21300000, guid: a2b2c86432144aa5b27465a2b2f57982, type: 3}
   summonQuote: 
   possessedSkillId: 
-  dropWeight: 0
+  dropWeight: 1
   baseStats:
     hp: 12
     maxHp: 12
@@ -32,3 +37,4 @@ MonoBehaviour:
   spdPerLevel: 0.2
   baseCritChance: 0.05
   baseCritMult: 1.5
+

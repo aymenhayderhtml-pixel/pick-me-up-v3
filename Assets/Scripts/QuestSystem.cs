@@ -67,20 +67,28 @@ public class QuestSystem : MonoBehaviour
     // ─── State ────────────────────────────────────────────────────────────────
 
     private QuestSaveData _saveData = new QuestSaveData();
+    private Action<HeroInstance> _onHeroSummoned;
+    private Action<HeroInstance> _onHeroDied;
     public IReadOnlyList<Quest> AllQuests => _saveData.quests;
 
     // ─── Unity Lifecycle ──────────────────────────────────────────────────────
 
     private void OnEnable()
     {
-        GameManager.OnHeroSummoned   += _ => Track(QuestType.SummonHeroes, 1);
-        GameManager.OnHeroDied       += _ => { }; // handled via ExtractEssence explicitly
+        _onHeroSummoned ??= _ => Track(QuestType.SummonHeroes, 1);
+        _onHeroDied ??= _ => { }; // handled via ExtractEssence explicitly
+
+        GameManager.OnHeroSummoned   += _onHeroSummoned;
+        GameManager.OnHeroDied       += _onHeroDied;
         GameManager.OnRosterChanged  += CheckDailyLogin;
     }
 
     private void OnDisable()
     {
-        GameManager.OnHeroSummoned  -= _ => Track(QuestType.SummonHeroes, 1);
+        if (_onHeroSummoned != null)
+            GameManager.OnHeroSummoned -= _onHeroSummoned;
+        if (_onHeroDied != null)
+            GameManager.OnHeroDied -= _onHeroDied;
         GameManager.OnRosterChanged -= CheckDailyLogin;
     }
 

@@ -17,6 +17,8 @@ public class GameManager : MonoBehaviour
     [Header("Hero Registry")]
     public HeroData[] allHeroData;      // drag all SO_Hero_* assets here
     public HeroDatabase HeroDatabase { get; private set; } = new HeroDatabase();
+    public SkillData[] allSkillData;
+    public SkillDatabase SkillDatabase { get; private set; } = new SkillDatabase();
 
     // ── Live State ────────────────────────────────────────
     [HideInInspector] public GameState State = new GameState();
@@ -48,6 +50,7 @@ public class GameManager : MonoBehaviour
         FacilityManager = GetComponent<FacilityManager>();
 
         InitializeHeroDatabase();
+        InitializeSkillDatabase();
 
         SaveSystem.Initialize();
         LoadGame();
@@ -445,6 +448,40 @@ public class GameManager : MonoBehaviour
         if (issues.Count > 0)
         {
             Debug.LogWarning($"[GameManager] HeroDatabase validation reported {issues.Count} issue(s).\n- {string.Join("\n- ", issues)}");
+        }
+    }
+
+    void InitializeSkillDatabase()
+    {
+        var resourceSkills = Resources.LoadAll<SkillData>("Skills");
+        var fallbackSkills = Resources.LoadAll<SkillData>(string.Empty) ?? Array.Empty<SkillData>();
+        var inspectorSkills = allSkillData ?? Array.Empty<SkillData>();
+
+        var merged = new List<SkillData>(resourceSkills.Length + inspectorSkills.Length + fallbackSkills.Length);
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        void AddRange(IEnumerable<SkillData> source)
+        {
+            foreach (var skill in source)
+            {
+                if (skill == null) continue;
+                var key = !string.IsNullOrWhiteSpace(skill.skillId) ? skill.skillId.Trim() : skill.name;
+                if (string.IsNullOrWhiteSpace(key)) continue;
+                if (!seen.Add(key)) continue;
+                merged.Add(skill);
+            }
+        }
+
+        AddRange(resourceSkills);
+        AddRange(inspectorSkills);
+        AddRange(fallbackSkills);
+
+        allSkillData = merged.ToArray();
+        SkillDatabase = global::SkillDatabase.Build(allSkillData);
+
+        if (allSkillData.Length == 0)
+        {
+            Debug.LogWarning("[GameManager] No SkillData assets were found. Skill lookups will return null until skills are added.");
         }
     }
 }

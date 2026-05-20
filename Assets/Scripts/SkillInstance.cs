@@ -13,29 +13,49 @@ public class SkillInstance
     [NonSerialized]
     public int cooldownTurnsRemaining = 0;
 
-    public SkillData Data => GameManager.Instance != null ? GetSkillDataRef() : null;
+    public SkillData Data => GetSkillDataRef();
 
     private SkillData _dataCache;
 
     private SkillData GetSkillDataRef()
     {
         if (_dataCache != null) return _dataCache;
-        // Search in Resources folder
-        var loaded = Resources.Load<SkillData>($"Skills/{skillId}");
-        if (loaded == null)
+
+        if (string.IsNullOrWhiteSpace(skillId))
         {
-            // Fallback: search all loaded skill assets
-            var allSkills = Resources.LoadAll<SkillData>("Skills");
-            foreach (var s in allSkills)
+            return null;
+        }
+
+        // Prefer the central registry if GameManager is available.
+        if (GameManager.Instance != null)
+        {
+            var database = GameManager.Instance.SkillDatabase;
+            if (database != null)
             {
-                if (s.skillId == skillId)
+                var byId = database.Get(skillId);
+                if (byId != null)
                 {
-                    _dataCache = s;
+                    _dataCache = byId;
                     return _dataCache;
                 }
             }
         }
-        _dataCache = loaded;
+
+        // Fallback: scan all Resources-loaded SkillData assets.
+        // This keeps the game functional even before a dedicated Skills folder exists.
+        var allSkills = Resources.LoadAll<SkillData>(string.Empty);
+        foreach (var s in allSkills)
+        {
+            if (s == null) continue;
+            if (string.Equals(s.skillId, skillId, StringComparison.OrdinalIgnoreCase))
+            {
+                _dataCache = s;
+                return _dataCache;
+            }
+        }
+
+        // Final fallback: try the conventional Resources/Skills path if assets are added later.
+        _dataCache = Resources.Load<SkillData>($"Skills/{skillId}");
         return _dataCache;
     }
 

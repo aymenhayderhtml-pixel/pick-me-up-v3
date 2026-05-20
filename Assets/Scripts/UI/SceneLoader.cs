@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -62,9 +63,34 @@ public class SceneLoader : MonoBehaviour
     public static void GoToSummon()       => LoadScene(SCENE_SUMMON);
     public static void GoToSquadForm()    => LoadScene(SCENE_SQUAD_FORM);
     public static void GoToBattle()       => LoadScene(SCENE_BATTLE);
-    public static void GoToResults()      => LoadScene(SCENE_RESULTS);
+    public static void GoToResults()      => LoadSceneIfAvailable(SCENE_RESULTS, SCENE_LOBBY);
     public static void GoToMemorial()     => LoadScene(SCENE_MEMORIAL);
     public static void GoToSynthesis()    => LoadScene(SCENE_SYNTHESIS);
+
+    private static void LoadSceneIfAvailable(string sceneName, string fallbackScene)
+    {
+        if (IsSceneInBuildSettings(sceneName))
+        {
+            LoadScene(sceneName);
+            return;
+        }
+
+        Debug.LogWarning($"[SceneLoader] Scene '{sceneName}' is not present in Build Settings. Falling back to '{fallbackScene}'.");
+        if (IsSceneInBuildSettings(fallbackScene))
+        {
+            LoadScene(fallbackScene);
+        }
+    }
+
+    private static bool IsSceneInBuildSettings(string sceneName)
+    {
+        if (string.IsNullOrWhiteSpace(sceneName)) return false;
+        return SceneManager.sceneCountInBuildSettings > 0 &&
+               Enumerable.Range(0, SceneManager.sceneCountInBuildSettings)
+                   .Select(SceneUtility.GetScenePathByBuildIndex)
+                   .Any(path => !string.IsNullOrWhiteSpace(path) &&
+                                System.IO.Path.GetFileNameWithoutExtension(path) == sceneName);
+    }
 
     // ─────────────────────────────────────────────────────
     // TRANSITION COROUTINE

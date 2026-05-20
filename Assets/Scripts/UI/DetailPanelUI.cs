@@ -106,7 +106,25 @@ public class DetailPanelUI : MonoBehaviour
         if (txt_DayLine == null) txt_DayLine = FindText("txt_DayLine");
         if (txt_SkillName == null) txt_SkillName = FindText("txt_SkillName");
         if (txt_SkillDesc == null) txt_SkillDesc = FindText("txt_SkillDesc");
-        if (Portrait == null) Portrait = FindDeepChild(transform, "Portrait")?.GetComponent<RawImage>();
+        if (Portrait == null)
+        {
+            var portraitTransform = FindDeepChild(transform, "Portrait");
+            if (portraitTransform != null)
+            {
+                Portrait = portraitTransform.GetComponent<RawImage>();
+                if (Portrait == null)
+                {
+                    var image = portraitTransform.GetComponent<Image>();
+                    if (image != null)
+                    {
+                        Portrait = image.gameObject.AddComponent<RawImage>();
+                        Portrait.texture = image.sprite != null ? image.sprite.texture : null;
+                        Portrait.uvRect = new Rect(0f, 0f, 1f, 1f);
+                        image.enabled = false;
+                    }
+                }
+            }
+        }
         if (btn_Close == null) btn_Close = FindButton("btn_Close");
     }
 
@@ -137,6 +155,7 @@ public class DetailPanelUI : MonoBehaviour
         }
 
         target.texture = portrait.texture;
+        target.enabled = true;
 
         var texRect = portrait.textureRect;
         var tex = portrait.texture;

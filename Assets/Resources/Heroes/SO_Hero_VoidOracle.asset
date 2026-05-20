@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 027b7b0150ea1664f9e0863982add736, type: 3}
+  m_Name: SO_Hero_VoidOracle
+  m_EditorClassIdentifier: 
+  heroName: Void Oracle
+  heroClass: 2
+  starRating: 5
+  portrait: {fileID: 0}
+  summonQuote: I have seen the end of time.
+  dropWeight: 0.5
+  baseStats:
+    hp: 110
+    maxHp: 110
+    atk: 50
+    def: 6
+    spd: 15
+  possibleTraits:
+  - 5
+  - 4
+  hpPerLevel: 5
+  atkPerLevel: 1.5
+  defPerLevel: 0.8
+  spdPerLevel: 0.2
+  baseCritChance: 0.05
+  baseCritMult: 1.5

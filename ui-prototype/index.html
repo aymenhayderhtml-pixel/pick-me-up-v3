@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, orientation=landscape">
+    <title>Hero Roster UI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app-container">
+        <!-- Left Panel: Hero Roster Grid -->
+        <div id="roster-panel">
+            <div class="roster-header">
+                <h2>Roster</h2>
+                <div class="roster-filters">
+                    <span>Filter: All</span>
+                    <span>Sort: CP</span>
+                </div>
+            </div>
+            <div id="hero-grid" class="hero-grid">
+                <!-- Grid Cards injected via JS -->
+            </div>
+        </div>
+
+        <!-- Right Panel: Hero Detail -->
+        <div id="detail-panel" class="hidden">
+            <!-- Content injected via JS -->
+        </div>
+    </div>
+    
+    <!-- Template for Grid Card -->
+    <template id="hero-card-template">
+        <div class="hero-card">
+            <div class="card-bg"></div>
+            <div class="card-overlay"></div>
+            <div class="card-border"></div>
+            
+            <div class="card-top">
+                <div class="condition-icon"></div>
+                <div class="deployment-badge hidden">★ Deployed</div>
+            </div>
+            
+            <div class="card-bottom">
+                <div class="stars"></div>
+                <div class="hero-name"></div>
+                <div class="hero-class"></div>
+                <div class="hero-cp"></div>
+            </div>
+        </div>
+    </template>
+
+    <script src="app.js"></script>
+</body>
+</html>

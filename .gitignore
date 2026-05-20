@@ -1,0 +1,13 @@
+Library/
+Logs/
+UserSettings/
+.utmp/
+.vscode/
+node_modules/
+package-lock.json
+pick-me-up-v3.apk
+pick-me-up-v3_BurstDebugInformation_DoNotShip/
+unity_build_log.txt
+Assembly-CSharp.csproj
+Assembly-CSharp-Editor.csproj
+*.slnx

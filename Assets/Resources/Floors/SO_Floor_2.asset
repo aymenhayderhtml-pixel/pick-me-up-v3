@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8f75904be124ea2ab08f657a8a183ff, type: 3}
+  m_Name: SO_Floor_2
+  m_EditorClassIdentifier: 
+  floorNumber: 2
+  floorTitle: Wolf Woods
+  staminaCost: 5
+  goldReward: 200
+  xpReward: 65
+  enemyPool:
+  - {fileID: 11400000, guid: 8b137604be124ea2ab08f657a8a183ff, type: 3}
+  - {fileID: 11400000, guid: 8b137604be124ea2ab08f657a8a183ff, type: 3}

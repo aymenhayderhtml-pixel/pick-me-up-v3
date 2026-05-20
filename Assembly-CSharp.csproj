@@ -62,10 +62,10 @@
     <Compile Include="Assets\Scripts\UI\LobbyUI.cs" />
     <Compile Include="Assets\Scripts\UI\MemorialUI.cs" />
     <Compile Include="Assets\Scripts\SkillData.cs" />
-    <Compile Include="Assets\Scripts\SkillDatabase.cs" />
     <Compile Include="Assets\Scripts\UI\RosterUI.cs" />
     <Compile Include="Assets\Scripts\UI\DetailPanelUI.cs" />
     <Compile Include="Assets\Scripts\UI\TraitRowUI.cs" />
+    <Compile Include="Assets\Scripts\SkillDatabase.cs" />
     <Compile Include="Assets\Scripts\UI\StatBox.cs" />
     <Compile Include="Assets\Scripts\QuestSystem.cs" />
     <Compile Include="Assets\Scripts\UI\SynthesisUI.cs" />

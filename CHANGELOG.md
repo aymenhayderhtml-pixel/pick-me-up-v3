@@ -13,3 +13,4 @@
 - Added root AI workflow files
 - Added system templates for hero, combat, summon, UI, save, inventory, skill, and data pipeline docs
 - Added local AI guidance files for asset and script folders
+- Added a token-efficient Qwen audit prompt in `Docs/QWEN_CODEBASE_AUDIT_PROMPT.md`
